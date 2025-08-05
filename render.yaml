@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: cryptomind-api
+    env: python
+    buildCommand: ""
+    startCommand: "python flask_api.py"
+    plan: free
+    branch: main
+    region: oregon
+
