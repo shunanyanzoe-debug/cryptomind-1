@@ -119,7 +119,7 @@ def generate_weights():
         top_n = int(request.args.get("top_n", 10))
 
         # ✅ 运行主预测函数
-        main()
+        #main()
 
         # ✅ 尝试读取最新预测结果
         pred_path = Path("stage3-4_result/data/pred_enet_sentiment.csv")
