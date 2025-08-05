@@ -107,6 +107,10 @@ CORS(app)
 # if __name__ == "__main__":
 #     app.run(debug=True)
 
+@app.route('/')
+def index():
+    return "CryptoMind Flask API is running!"
+
 
 @app.route("/api/generate-weights", methods=["GET"])
 def generate_weights():
