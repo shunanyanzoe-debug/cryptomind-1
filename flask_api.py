@@ -166,7 +166,11 @@ def ask_ai():
         return jsonify({"answer": f"❌ Failed to fetch AI answer: {str(e)}"})
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)
 
+if __name__ == "__main__":
+    import os
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
 
