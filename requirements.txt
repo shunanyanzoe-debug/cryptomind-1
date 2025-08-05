@@ -1,5 +1,3 @@
---no-build-isolation
-
 setuptools>=42
 wheel
 
