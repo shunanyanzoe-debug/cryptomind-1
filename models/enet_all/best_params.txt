@@ -1,0 +1,1 @@
+{'model__alpha': 0.01, 'model__l1_ratio': 0.5}
