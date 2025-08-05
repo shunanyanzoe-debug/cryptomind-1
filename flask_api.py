@@ -151,7 +151,7 @@ def generate_weights():
         #main()  # 👈这个可能没有效果
         print("✅ main() 执行完毕")  # ✅调试3
 
-        pred_path = Path("stage3-4_result/data/pred_enet_sentiment.csv")
+        pred_path = Path("stage3-4_result/data/pred_enet_all.csv")
         df = pd.read_csv(pred_path)
         latest_date = df["date"].max()
         latest = df[df["date"] == latest_date].sort_values("y_pred", ascending=False)
