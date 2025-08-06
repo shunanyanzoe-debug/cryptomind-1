@@ -110,71 +110,85 @@ CORS(app)
 @app.route('/')
 def index():
     return "CryptoMind Flask API is running!"
-
-
+################################################OK
 # @app.route("/api/generate-weights", methods=["GET"])
 # def generate_weights():
 #     try:
-#         # ✅ 获取前端参数 top_n（默认10）
+#         print("✅ 接收到 /api/generate-weights 请求")  # ✅调试1
+#
 #         top_n = int(request.args.get("top_n", 10))
 #
-#         # ✅ 运行主预测函数
-#         main()
+#         print("✅ 开始运行 main()")  # ✅调试2
+#         #main()  # 👈这个可能没有效果
+#         print("✅ main() 执行完毕")  # ✅调试3
 #
-#         # ✅ 尝试读取最新预测结果
-#         pred_path = Path("stage3-4_result/data/pred_enet_sentiment.csv")
+#         pred_path = Path("stage3-4_result/data/pred_enet_all.csv")
 #         df = pd.read_csv(pred_path)
 #         latest_date = df["date"].max()
 #         latest = df[df["date"] == latest_date].sort_values("y_pred", ascending=False)
 #
 #         latest = latest.head(top_n)
 #         output = latest[["symbol", "y_pred"]].rename(columns={"y_pred": "predicted_return"})
+#
+#         print("✅ 返回预测结果:", output.to_dict(orient="records"))  # ✅调试4
+#
 #         return jsonify(output.to_dict(orient="records"))
 #
 #     except Exception as e:
-#         # ✅ 如果失败，则读取备用的权重文件 weights.json
+#         print("❌ main() 执行失败:", str(e))  # ✅调试5
+#
 #         try:
 #             with open("weights.json", "r") as f:
 #                 weights = json.load(f)
+#             print("📦 返回备用权重 weights.json")
 #             return jsonify(weights)
 #         except Exception as backup_error:
-#             return jsonify({"error": f"Main failed: {str(e)}; Backup failed: {str(backup_error)}"})
-################################################OK
+#             return jsonify({
+#                 "error": f"Main failed: {str(e)}; Backup failed: {str(backup_error)}"
+#             })
+
+
 @app.route("/api/generate-weights", methods=["GET"])
 def generate_weights():
     try:
-        print("✅ 接收到 /api/generate-weights 请求")  # ✅调试1
+        print("✅ 接收到 /api/generate-weights 请求")
 
         top_n = int(request.args.get("top_n", 10))
-
-        print("✅ 开始运行 main()")  # ✅调试2
-        #main()  # 👈这个可能没有效果
-        print("✅ main() 执行完毕")  # ✅调试3
-
         pred_path = Path("stage3-4_result/data/pred_enet_all.csv")
+
         df = pd.read_csv(pred_path)
         latest_date = df["date"].max()
-        latest = df[df["date"] == latest_date].sort_values("y_pred", ascending=False)
+        latest = df[df["date"] == latest_date]
 
-        latest = latest.head(top_n)
-        output = latest[["symbol", "y_pred"]].rename(columns={"y_pred": "predicted_return"})
+        # 获取 Top N
+        top_df = latest.sort_values("y_pred", ascending=False).head(top_n)
+        top_assets = top_df[["symbol", "y_pred"]].rename(columns={"y_pred": "predicted_return"})
 
-        print("✅ 返回预测结果:", output.to_dict(orient="records"))  # ✅调试4
+        # 获取 Bottom N
+        bottom_df = latest.sort_values("y_pred", ascending=True).head(top_n)
+        bottom_assets = bottom_df[["symbol", "y_pred"]].rename(columns={"y_pred": "predicted_return"})
 
-        return jsonify(output.to_dict(orient="records"))
+        print("✅ 返回 Top 和 Bottom 预测结果")
+        return jsonify({
+            "top_assets": top_assets.to_dict(orient="records"),
+            "bottom_assets": bottom_assets.to_dict(orient="records")
+        })
 
     except Exception as e:
-        print("❌ main() 执行失败:", str(e))  # ✅调试5
-
+        print("❌ 失败:", str(e))
         try:
             with open("weights.json", "r") as f:
                 weights = json.load(f)
-            print("📦 返回备用权重 weights.json")
-            return jsonify(weights)
+            return jsonify({"top_assets": weights, "bottom_assets": []})
         except Exception as backup_error:
             return jsonify({
                 "error": f"Main failed: {str(e)}; Backup failed: {str(backup_error)}"
             })
+
+
+
+
+
 
 
 
